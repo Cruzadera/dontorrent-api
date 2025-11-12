@@ -3,16 +3,18 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "node tests/run.test.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "María",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "cheerio": "^1.1.2",
     "express": "^5.1.0",
+    "fast-xml-parser": "^5.3.1",
     "node-fetch": "^2.7.0",
-    "xmlbuilder2": "^4.0.0"
+    "xmlbuilder": "^15.1.1"
   }
 }
