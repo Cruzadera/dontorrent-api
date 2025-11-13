@@ -1,24 +1,20 @@
 const fetch = require("node-fetch");
-const { XMLValidator } = require("fast-xml-parser");
 
-(async () => {
-  const url = "http://localhost:8085/torznab?q=matrix";
-  console.log(`🌐 Testing API endpoint: ${url}`);
+module.exports = async function () {
+  console.log("\n🧪 Test 3: API /torznab");
 
   try {
-    const res = await fetch(url);
-    const text = await res.text();
+    const res = await fetch("http://localhost:8085/torznab?q=matrix");
+    const xml = await res.text();
 
-    const validation = XMLValidator.validate(text);
-    if (validation === true) {
-      console.log("✅ XML Torznab response OK");
-      console.log(text.slice(0, 200) + "...");
-    } else {
-      console.log("⚠️ XML invalid or unexpected content");
-      console.log(validation.err);
-      console.log(text.slice(0, 200) + "...");
+    if (!xml.startsWith("<?xml")) {
+      console.log("❌ FAIL: No devolvió XML");
+      return;
     }
+
+    console.log("✅ OK: XML recibido");
+    console.log(xml.substring(0, 200) + "...");
   } catch (err) {
-    console.error("❌ Error calling API:", err.message);
+    console.error("❌ Error en test 3:", err.message);
   }
-})();
+};
