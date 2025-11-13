@@ -1,28 +1,32 @@
-const xmlbuilder = require("xmlbuilder");
+async function search(query) {
+  const base = getBaseUrl();
+  const url = `${base}/search/${encodeURIComponent(query)}`;
 
-function buildTorznabXML(items) {
-  const feed = xmlbuilder.create("rss", { version: "1.0", encoding: "UTF-8" })
-    .att("version", "2.0")
-    .att("xmlns:torznab", "http://torznab.com/schemas/2015/feed");
+  console.log("🔍 Buscando:", url);
 
-  const channel = feed.ele("channel");
-  channel.ele("title").txt("DonTorrent API");
-  channel.ele("description").txt("Resultados scrapeados de DonTorrent");
+  const html = await fetchHtml(url);
+  if (!html || html.length < 1000) {
+    console.log("⚠️ HTML vacío o inválido");
+    return [];
+  }
 
-  items.forEach((it) => {
-    const item = channel.ele("item");
-    item.ele("title").txt(it.title || "Sin título");
-    item.ele("link").txt(it.link || "");
-    item.ele("enclosure", {
-      url: it.link || "",
-      type: "application/x-bittorrent",
-    });
-    if (it.size) {
-      item.ele("torznab:attr", { name: "size", value: it.size });
+  const $ = cheerio.load(html);
+
+  const results = [];
+
+  $(".list-group .list-group-item").each((i, item) => {
+    const title = $(item).find(".titulo").text().trim();
+    const magnet = $(item).find("a[href*='magnet']").attr("href");
+
+    if (title && magnet) {
+      results.push({
+        title,
+        magnet,
+      });
     }
   });
 
-  return feed.end({ pretty: true });
+  return results;
 }
 
-module.exports = { buildTorznabXML };
+module.exports = { search };

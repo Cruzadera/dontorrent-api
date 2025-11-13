@@ -1,23 +1,27 @@
 const express = require("express");
-const { getTorrents } = require("./services/dontorrent.js");
+const { search } = require("./services/torznab.js");
 const { buildTorznabXML } = require("./utils/torznab.js");
 
 const app = express();
 const PORT = process.env.PORT || 8085;
 
-
 app.get("/torznab", async (req, res) => {
   const query = req.query.q;
-  if (!query) return res.status(400).send("Missing ?q parameter");
+  if (!query) {
+    return res.status(400).send("Missing ?q parameter");
+  }
 
   try {
-    const results = await getTorrents(query);
+    console.log("🔍 Petición Torznab para:", query);
+
+    const results = await search(query);
     const xml = buildTorznabXML(results);
+
     res.set("Content-Type", "application/xml");
     res.send(xml);
-  } catch (err) {
-    console.error("❌ Error:", err);
-    res.status(500).send("Internal server error");
+  } catch (error) {
+    console.error("❌ Error en /torznab:", error);
+    return res.status(500).send("Internal server error");
   }
 });
 
