@@ -1,12 +1,12 @@
 const express = require("express");
-const { search } = require("./services/torznab.js");
-const { buildTorznabXML } = require("./utils/torznab.js");
+const { search, buildTorznabXML } = require("./utils/torznab.js");
 
 const app = express();
 const PORT = process.env.PORT || 8085;
 
 app.get("/torznab", async (req, res) => {
   const query = req.query.q;
+
   if (!query) {
     return res.status(400).send("Missing ?q parameter");
   }
@@ -14,9 +14,8 @@ app.get("/torznab", async (req, res) => {
   try {
     console.log("🔍 Torznab query:", query);
 
-    const results = await search(query);
-
-    const xml = buildTorznabXML(results);
+    const results = await search(query);        // Scraper
+    const xml = buildTorznabXML(results);       // XML Torznab
 
     res.set("Content-Type", "application/xml");
     res.send(xml);
