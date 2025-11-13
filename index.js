@@ -1,12 +1,10 @@
 const express = require("express");
 const { getTorrents } = require("./services/dontorrent.js");
 const { buildTorznabXML } = require("./utils/torznab.js");
-const { startProxyWatcher } = require("./services/proxyWatcher.js");
 
 const app = express();
 const PORT = process.env.PORT || 8085;
 
-startProxyWatcher();
 
 app.get("/torznab", async (req, res) => {
   const query = req.query.q;
