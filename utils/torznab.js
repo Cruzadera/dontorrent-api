@@ -1,3 +1,6 @@
+const cheerio = require("cheerio");
+const { getBaseUrl, fetchHtml } = require("../services/dontorrent.js");
+
 async function search(query) {
   const base = getBaseUrl();
   const url = `${base}/search/${encodeURIComponent(query)}`;
@@ -5,13 +8,13 @@ async function search(query) {
   console.log("🔍 Buscando:", url);
 
   const html = await fetchHtml(url);
+
   if (!html || html.length < 1000) {
     console.log("⚠️ HTML vacío o inválido");
     return [];
   }
 
   const $ = cheerio.load(html);
-
   const results = [];
 
   $(".list-group .list-group-item").each((i, item) => {
@@ -19,10 +22,7 @@ async function search(query) {
     const magnet = $(item).find("a[href*='magnet']").attr("href");
 
     if (title && magnet) {
-      results.push({
-        title,
-        magnet,
-      });
+      results.push({ title, magnet });
     }
   });
 

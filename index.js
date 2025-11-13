@@ -12,16 +12,17 @@ app.get("/torznab", async (req, res) => {
   }
 
   try {
-    console.log("🔍 Petición Torznab para:", query);
+    console.log("🔍 Torznab query:", query);
 
     const results = await search(query);
+
     const xml = buildTorznabXML(results);
 
     res.set("Content-Type", "application/xml");
     res.send(xml);
-  } catch (error) {
-    console.error("❌ Error en /torznab:", error);
-    return res.status(500).send("Internal server error");
+  } catch (err) {
+    console.error("❌ Error en /torznab:", err);
+    res.status(500).send("Internal server error");
   }
 });
 
